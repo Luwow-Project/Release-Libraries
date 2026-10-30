@@ -1,0 +1,99 @@
+name: Tests
+
+on:
+  push:
+      branches:
+        - 'main'
+      paths-ignore:
+        - '**.md'
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "The Luwow release to test against, such as v2026.10.31 (default: CMakeLists.txt's RELEASE_VERSION)"
+        required: false
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  tests:
+    name: ${{ matrix.os.name }} (${{ matrix.build }})
+    runs-on: ${{ matrix.os.version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [{name: linux-x64, version: ubuntu-22.04}, {name: macos-arm64, version: macos-latest}, {name: windows-x64, version: windows-latest}]
+        # dlls: the libraries against the release's SDK, run with its executables
+        # static: the release's executables built from its sources, with the libraries bound in
+        build: [dlls, static]
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Check out with submodules
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # Installing curl for Linux, net.request's client.
+      - name: Install libcurl
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev pkg-config
+          pkg-config --exists --print-errors libcurl
+          echo "libcurl $(pkg-config --modversion libcurl)"
+
+      - name: Pick the release
+        run: |
+          version="${{ inputs.release_version }}"
+          if [ -z "$version" ]; then
+            version="$(sed -n 's/^set(RELEASE_VERSION "\([^"]*\)".*/\1/p' CMakeLists.txt)"
+          fi
+          echo "Luwow release $version"
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Configure
+        run: |
+          static=OFF
+          if [ "${{ matrix.build }}" = "static" ]; then static=ON; fi
+          cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D "RELEASE_VERSION=$RELEASE_VERSION" -D "STATIC_BUILD=$static"
+
+      - name: Build
+        id: build
+        run: cmake --build build --config Release --parallel 4
+
+      # The DLLs run with the release's own executables
+      - name: Download the release's executables
+        if: matrix.build == 'dlls'
+        run: |
+          gh release download "$RELEASE_VERSION" --repo Luwow-Project/Release \
+            --pattern "luwow-${RELEASE_VERSION}-${{ matrix.os.name }}.zip" --output release.zip
+          mkdir release-bin
+          (cd release-bin && unzip -q ../release.zip)
+          echo "LUWOW_BIN=release-bin" >> "$GITHUB_ENV"
+          echo "TEST_ARGUMENTS=" >> "$GITHUB_ENV"
+
+      - name: Find the static executables
+        if: matrix.build == 'static'
+        run: |
+          runscript="$(find build/bin \( -name runscript -o -name runscript.exe \) -type f | head -n 1)"
+          echo "LUWOW_BIN=$(dirname "$runscript")" >> "$GITHUB_ENV"
+          echo "TEST_ARGUMENTS=--static" >> "$GITHUB_ENV"
+
+      - name: Library tests
+        id: libraries
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: python tests/run_tests.py --bin "$LUWOW_BIN" $TEST_ARGUMENTS --suite libraries
+
+      - name: Net tests (net.request)
+        id: net
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: python tests/run_tests.py --bin "$LUWOW_BIN" $TEST_ARGUMENTS --suite net

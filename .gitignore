@@ -1,0 +1,8 @@
+build/
+build-static/
+.vscode/
+.DS_Store
+scripts/
+/dist/
+/release-bin/
+*.zip
