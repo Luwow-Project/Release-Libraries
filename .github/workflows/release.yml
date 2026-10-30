@@ -1,8 +1,5 @@
 name: Release
 
-# Publishes luwow-libraries-<version>-<os>.zip: the library DLLs in a "libraries" folder, built against one
-# Luwow release's SDK and tested with its executables. They only load into that release's executables.
-
 on:
   workflow_dispatch:
     inputs:

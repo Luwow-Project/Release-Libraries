@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-The libraries' tests, run with a release's runscript:
+The libraries' tests, run with a release's binary:
 
   libraries  every library loads and answers a call
   net        net.request against a local HTTP server, through each platform's client
@@ -36,12 +36,8 @@ TIMEOUT = 120
 
 SUITE_TITLES = {"libraries": "Libraries", "net": "Net (net.request)"}
 
-# What the engine prints when it can't read or load the config's dlls
 DLL_MESSAGES = ["could not list module directory", "Could not load module", "DLL modules are not supported"]
 
-
-# The net case's server: what each path answers, a deterministic megabyte for saveTo, and a path slow
-# enough to time out
 BIG_BODY = bytes(i % 251 for i in range(1024 * 1024))
 
 
@@ -76,7 +72,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         elif path == "/empty":
             self.answer(200, b"", None, send_body)
         elif path == "/slow":
-            # Longer than WinHTTP's shortest timeout: it times out a short one after about 4 seconds
             time.sleep(6)
             self.answer(200, b"late", None, send_body)
         else:

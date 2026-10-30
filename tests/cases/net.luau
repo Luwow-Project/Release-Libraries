@@ -1,6 +1,3 @@
--- net.request against the local HTTP server run_tests.py starts, through every platform's client:
--- WinHTTP, NSURLSession and libcurl. The runner gives the server's URL, the folder to save into and the
--- digest of /big's body as the script's arguments, after the script and the config.
 local t = require("./harness")
 local fs = require("@Luwow/fs")
 local net = require("@Luwow/net")

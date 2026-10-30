@@ -1,6 +1,3 @@
--- Every library loads into the release's executables and answers a call: they were built against the SDK
--- of the same release. The runner gives a scratch folder and the platform (Python's sys.platform) after
--- the script and the config.
 local t = require("./harness")
 
 local folder: string, platform: string = GlobalArgs[3], GlobalArgs[4]

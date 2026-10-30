@@ -26,7 +26,7 @@ endif()
 set(RELEASE_VERSION "v2026.10.31" CACHE STRING "The Luwow release the libraries are built for, such as v2026.10.31")
 option(STATIC_BUILD "Build the release's executables with the libraries bound in, instead of the libraries as DLLs" OFF)
 
-# Where the release comes from: its SDK's zips for DLLs, its sources for static builds
+# Where the release comes from
 set(LUWOW_RELEASE_REPOSITORY "https://github.com/Luwow-Project/Release" CACHE STRING "The Luwow Release repository")
 
 include(FetchContent)
@@ -74,8 +74,7 @@ endif()
 find_package(LuwowSDK REQUIRED CONFIG)
 message(STATUS "Luwow SDK ${LUWOW_SDK_VERSION}, module ABI ${LUWOW_SDK_ABI_VERSION}")
 
-# What the libraries' CMake expects from a source build of the release: the engine's headers and the
-# Luau.VM target, both from the SDK here
+# What the libraries' CMake expects from a source build of the release
 get_target_property(sdkIncludes Luwow::SDK INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(sdkDefinitions Luwow::SDK INTERFACE_COMPILE_DEFINITIONS)
 if(NOT sdkDefinitions)

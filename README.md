@@ -1,6 +1,6 @@
 # Libraries build repository for Luwow-Project
 
-This repository builds Luwow's libraries (gui, task, fs, io, signal and net) for a release of [Luwow](https://github.com/Luwow-Project/Release). Each library is a submodule under `libraries/`.
+This repository builds Luwow's libraries for a release of [Luwow](https://github.com/Luwow-Project/Release). Each library is a submodule under `libraries/`.
 
 By default the libraries are built as DLLs, against the SDK the release publishes. They only load into that release's executables. A static build instead builds the release's executables from its sources, with the libraries bound into them.
 
