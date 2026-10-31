@@ -104,15 +104,15 @@ jobs:
       - name: Install
         run: |
           cmake --install build --config Release --prefix dist --component libraries
-          ls -R dist/libraries dist/types
+          ls -R dist/libraries dist/types dist/.config.luau
 
       - name: Pack
         run: |
           name="luwow-libraries-${VERSION}-${{ matrix.os.name }}"
           if [ "$RUNNER_OS" = "Windows" ]; then
-            (cd dist && 7z a -tzip "../${name}.zip" libraries types > /dev/null)
+            (cd dist && 7z a -tzip "../${name}.zip" libraries types .config.luau > /dev/null)
           else
-            (cd dist && zip -qry "../${name}.zip" libraries types)
+            (cd dist && zip -qry "../${name}.zip" libraries types .config.luau)
           fi
           ls -l "${name}.zip"
 

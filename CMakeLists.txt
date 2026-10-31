@@ -88,3 +88,5 @@ set_target_properties(Luau.VM PROPERTIES
 )
 
 add_subdirectory(libraries)
+
+install(FILES .config.luau DESTINATION . COMPONENT libraries)

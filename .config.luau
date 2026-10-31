@@ -3,6 +3,7 @@ return {
         languagemode = "strict",
         aliases = {
             Luwow = "./types"
-        }
+        },
+        dlls = "./libraries"
     }
 }
