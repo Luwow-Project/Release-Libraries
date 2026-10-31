@@ -10,15 +10,17 @@ set(NET_ROOT ${CMAKE_CURRENT_LIST_DIR}/net)
 set(SIGNAL_ROOT ${CMAKE_CURRENT_LIST_DIR}/signal)
 set(LIBUV_ROOT ${CMAKE_CURRENT_LIST_DIR}/../extern/libuv)
 
+set(LUWOW_LIBRARIES task fs io signal net)
 if(WIN32 OR APPLE)
-    add_subdirectory(${GUI_ROOT}/src gui)
+    list(PREPEND LUWOW_LIBRARIES gui)
 endif()
 
-add_subdirectory(${TASK_ROOT}/src task)
-add_subdirectory(${FS_ROOT}/src fs)
-add_subdirectory(${IO_ROOT}/src io)
-add_subdirectory(${SIGNAL_ROOT}/src signal)
-add_subdirectory(${NET_ROOT}/src net)
+# Each library's DLL from its src folder, and its types, scripts/<name>.luau,
+# into a types folder besides the libraries folder.
+foreach(name IN LISTS LUWOW_LIBRARIES)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/${name}/src ${name})
+    install(FILES ${CMAKE_CURRENT_LIST_DIR}/${name}/scripts/${name}.luau DESTINATION types COMPONENT libraries)
+endforeach()
 
 # Only the static uv_a is linked into task, skip building uv.dll and libuv's tests
 set(LIBUV_BUILD_SHARED OFF CACHE BOOL "" FORCE)

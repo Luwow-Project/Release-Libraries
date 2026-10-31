@@ -78,4 +78,15 @@ python tests/run_tests.py --bin build-static/bin/Release --static
 
 ## Usage
 
-Extract `luwow-libraries-<version>-<os>.zip` next to the release's executables, and point a `.config.luau`'s `dlls` at its `libraries` folder. To learn how to use the libraries, you can head over to the [documentation](https://luwow-project.github.io/Documentation/tutorials/setup/#usage).
+Extract `luwow-libraries-<version>-<os>.zip` next to the release's executables. It has two folders: `libraries`, the DLLs a `.config.luau`'s `dlls` points at, and `types`, each library's types from its source.
+
+```luau
+return {
+    luau = {
+        aliases = { Luwow = "./types" },
+        dlls = "./libraries",
+    },
+}
+```
+
+`cmake --install build --config Release --prefix <folder> --component libraries` lays out the same two folders from a local build. To learn how to use the libraries, you can head over to the [documentation](https://luwow-project.github.io/Documentation/tutorials/setup/#usage).

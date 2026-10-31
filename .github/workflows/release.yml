@@ -68,6 +68,7 @@ jobs:
         shell: bash
 
     steps:
+      # Every library's source, with the types
       - uses: actions/checkout@v7
         with:
           submodules: recursive
@@ -101,15 +102,17 @@ jobs:
           python tests/run_tests.py --bin release-bin
 
       - name: Install
-        run: cmake --install build --config Release --prefix dist --component libraries
+        run: |
+          cmake --install build --config Release --prefix dist --component libraries
+          ls -R dist/libraries dist/types
 
       - name: Pack
         run: |
           name="luwow-libraries-${VERSION}-${{ matrix.os.name }}"
           if [ "$RUNNER_OS" = "Windows" ]; then
-            (cd dist && 7z a -tzip "../${name}.zip" libraries > /dev/null)
+            (cd dist && 7z a -tzip "../${name}.zip" libraries types > /dev/null)
           else
-            (cd dist && zip -qry "../${name}.zip" libraries)
+            (cd dist && zip -qry "../${name}.zip" libraries types)
           fi
           ls -l "${name}.zip"
 
