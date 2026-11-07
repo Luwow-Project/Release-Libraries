@@ -7,7 +7,7 @@ on:
         description: "The libraries' release version, such as v0.1.0"
         required: true
       release_version:
-        description: "The Luwow release they're built for, such as v2026.10.31 (default: CMakeLists.txt's RELEASE_VERSION)"
+        description: "The Luwow release they're built for, such as v2026.10.31 (default: the latest)"
         required: false
 
 permissions:
@@ -37,7 +37,7 @@ jobs:
         run: |
           version="${{ inputs.release_version }}"
           if [ -z "$version" ]; then
-            version="$(sed -n 's/^set(RELEASE_VERSION "\([^"]*\)".*/\1/p' CMakeLists.txt)"
+            version="$(gh release view --repo Luwow-Project/Release --json tagName --jq .tagName)"
           fi
           gh release view "$version" --repo Luwow-Project/Release > /dev/null
           echo "Built for Luwow $version"

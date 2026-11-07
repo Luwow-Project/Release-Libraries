@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: "The Luwow release to test against, such as v2026.10.31 (default: CMakeLists.txt's RELEASE_VERSION)"
+        description: "The Luwow release to test against, such as v2026.10.31 (default: the latest)"
         required: false
 
 env:
@@ -55,7 +55,7 @@ jobs:
         run: |
           version="${{ inputs.release_version }}"
           if [ -z "$version" ]; then
-            version="$(sed -n 's/^set(RELEASE_VERSION "\([^"]*\)".*/\1/p' CMakeLists.txt)"
+            version="$(gh release view --repo Luwow-Project/Release --json tagName --jq .tagName)"
           fi
           echo "Luwow release $version"
           echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"

@@ -15,12 +15,17 @@ if(WIN32 OR APPLE)
     list(PREPEND LUWOW_LIBRARIES gui)
 endif()
 
-# Each library's DLL from its src folder, and its types, scripts/<name>.luau,
-# into a types folder besides the libraries folder.
+# Each library's DLL from its src folder
 foreach(name IN LISTS LUWOW_LIBRARIES)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/${name}/src ${name})
-    install(FILES ${CMAKE_CURRENT_LIST_DIR}/${name}/scripts/${name}.luau DESTINATION types COMPONENT libraries)
 endforeach()
+
+# Each library's types, scripts/<name>.luau
+luwow_copy_library_types(${LUWOW_LIBRARIES}
+    ROOT ${CMAKE_CURRENT_LIST_DIR}
+    DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../types
+    INSTALL_COMPONENT libraries
+)
 
 # Only the static uv_a is linked into task, skip building uv.dll and libuv's tests
 set(LIBUV_BUILD_SHARED OFF CACHE BOOL "" FORCE)
