@@ -37,12 +37,9 @@ t.check("net loads", function()
 	t.equal(type(net.request), "function", "net.request")
 end)
 
--- No gui on Linux
-if not string.find(platform, "linux", 1, true) then
-	t.check("gui loads", function()
-		local gui = require("@Luwow/gui")
-		t.equal(type(gui.createWindow), "function", "gui.createWindow")
-	end)
-end
+t.check("gui loads", function()
+	local gui = require("@Luwow/gui")
+	t.equal(type(gui.createComponent), "function", "gui.createComponent")
+end)
 
 t.done()

@@ -1,4 +1,4 @@
-# Every library, in one place for both builds: added from this repository's CMakeLists.txt for DLLs, and
+# Every library, in one place for both builds. Added from this repository's CMakeLists.txt for DLLs, and
 # from the release's through LUWOW_LIBRARY_DIRS for static builds. luwow_add_library comes from the SDK or
 # the release's sources, ENGINE_ROOT and Luau.VM likewise.
 
@@ -10,10 +10,7 @@ set(NET_ROOT ${CMAKE_CURRENT_LIST_DIR}/net)
 set(SIGNAL_ROOT ${CMAKE_CURRENT_LIST_DIR}/signal)
 set(LIBUV_ROOT ${CMAKE_CURRENT_LIST_DIR}/../extern/libuv)
 
-set(LUWOW_LIBRARIES task fs io signal net)
-if(WIN32 OR APPLE)
-    list(PREPEND LUWOW_LIBRARIES gui)
-endif()
+set(LUWOW_LIBRARIES task fs io signal net gui)
 
 # Each library's DLL from its src folder
 foreach(name IN LISTS LUWOW_LIBRARIES)

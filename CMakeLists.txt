@@ -23,7 +23,7 @@ endif()
 #   Library DLLs, against the release's SDK:              -D RELEASE_VERSION=<tag>
 #   Executables with the libraries bound into them:       -D RELEASE_VERSION=<tag> -D STATIC_BUILD=ON
 # The DLLs only load into the executables of the release they were built against.
-set(RELEASE_VERSION "v2026.10.31" CACHE STRING "The Luwow release the libraries are built for, such as v2026.10.31")
+set(RELEASE_VERSION "v2026.11.22" CACHE STRING "The Luwow release the libraries are built for")
 option(STATIC_BUILD "Build the release's executables with the libraries bound in, instead of the libraries as DLLs" OFF)
 
 # Where the release comes from
