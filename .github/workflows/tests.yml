@@ -42,14 +42,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Installing curl for Linux, net.request's client.
-      - name: Install libcurl
+      - name: Install libcurl and gtkmm
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev pkg-config
-          pkg-config --exists --print-errors libcurl
-          echo "libcurl $(pkg-config --modversion libcurl)"
+          sudo apt-get install -y libcurl4-openssl-dev libgtkmm-3.0-dev xvfb pkg-config
+          pkg-config --exists --print-errors libcurl gtkmm-3.0
+          echo "libcurl $(pkg-config --modversion libcurl), gtkmm $(pkg-config --modversion gtkmm-3.0)"
+          echo "TEST_DISPLAY=xvfb-run -a" >> "$GITHUB_ENV"
 
       - name: Pick the release
         run: |
@@ -91,9 +91,9 @@ jobs:
       - name: Library tests
         id: libraries
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        run: python tests/run_tests.py --bin "$LUWOW_BIN" $TEST_ARGUMENTS --suite libraries
+        run: $TEST_DISPLAY python tests/run_tests.py --bin "$LUWOW_BIN" $TEST_ARGUMENTS --suite libraries
 
       - name: Net tests (net.request)
         id: net
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        run: python tests/run_tests.py --bin "$LUWOW_BIN" $TEST_ARGUMENTS --suite net
+        run: $TEST_DISPLAY python tests/run_tests.py --bin "$LUWOW_BIN" $TEST_ARGUMENTS --suite net

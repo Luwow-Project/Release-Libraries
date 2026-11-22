@@ -77,14 +77,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Installing curl for Linux, net.request's client.
-      - name: Install libcurl
+      - name: Install libcurl and gtkmm
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev pkg-config
-          pkg-config --exists --print-errors libcurl
-          echo "libcurl $(pkg-config --modversion libcurl)"
+          sudo apt-get install -y libcurl4-openssl-dev libgtkmm-3.0-dev xvfb pkg-config
+          pkg-config --exists --print-errors libcurl gtkmm-3.0
+          echo "libcurl $(pkg-config --modversion libcurl), gtkmm $(pkg-config --modversion gtkmm-3.0)"
+          echo "TEST_DISPLAY=xvfb-run -a" >> "$GITHUB_ENV"
 
       - name: Configure
         run: cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D "RELEASE_VERSION=$RELEASE_VERSION"
@@ -99,7 +99,7 @@ jobs:
             --pattern "luwow-${RELEASE_VERSION}-${{ matrix.os.name }}.zip" --output release.zip
           mkdir release-bin
           (cd release-bin && unzip -q ../release.zip)
-          python tests/run_tests.py --bin release-bin
+          $TEST_DISPLAY python tests/run_tests.py --bin release-bin
 
       - name: Install
         run: |
